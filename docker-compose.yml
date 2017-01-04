@@ -1,6 +1,6 @@
 video:
   image: itmadublin/ffmpeg-concat
-  cpu_set: "1,2"
+  cpuset: 0,1
   cpu_quota: 50000
   environment:
     - READ_DIR=/video_input

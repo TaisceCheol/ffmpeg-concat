@@ -21,7 +21,7 @@ IFS=$'\n'
 MXF_FILES=$(find $READ_DIR -type f -name '*.MXF')
 
 # make directory to store concat textfile
-FILELIST_PATH=/var/tmp/ffmpeg_concat/
+FILELIST_PATH=/var/tmp/ffmpeg_concat
 mkdir -p $FILELIST_PATH
 
 # sort files by name and generate filelist 
@@ -30,14 +30,14 @@ printf "file '%s'\n" $(ls $MXF_FILES) > $FILELIST_PATH/filelist.txt
 # run ffmpeg checking if duration is set
 if [ $DURATION -eq -1 ]
 then
-	time ffmpeg -y -f concat -safe 0 -i $FILELIST_PATH/filelist.txt && \
-			-c:v $VIDEO_CODEC -preset $PRESET -crf $CRF -pix_fmt $PIX_FMT -vf yadif && \
-			-c:a $AUDIO_CODEC -b:a $AUDIO_BITRATE -ac 2 && \
+	time ffmpeg -y -f concat -safe 0 -i $FILELIST_PATH/filelist.txt  \
+			-c:v $VIDEO_CODEC -preset $PRESET -crf $CRF -pix_fmt $PIX_FMT -vf yadif  \
+			-c:a $AUDIO_CODEC -b:a $AUDIO_BITRATE -ac 2  \
 			-map 0 -loglevel $LOGLEVEL $WRITE_DIR/$NAME.mp4
 else
-	time ffmpeg -y -f concat -safe 0 -i $FILELIST_PATH/filelist.txt -t $DURATION && \
-			-c:v $VIDEO_CODEC -preset $PRESET -crf $CRF -pix_fmt $PIX_FMT -vf yadif && \
-			-c:a $AUDIO_CODEC -b:a $AUDIO_BITRATE -ac 2 &&\
+	time ffmpeg -y -f concat -safe 0 -i $FILELIST_PATH/filelist.txt -t $DURATION  \
+			-c:v $VIDEO_CODEC -preset $PRESET -crf $CRF -pix_fmt $PIX_FMT -vf yadif  \
+			-c:a $AUDIO_CODEC -b:a $AUDIO_BITRATE -ac 2 \
 			-map 0 -loglevel $LOGLEVEL $WRITE_DIR/$NAME.mp4
 fi
 
