@@ -1,0 +1,16 @@
+video:
+  image: testvideo
+  environment:
+    - READ_DIR=/video_input
+    - WRITE_DIR=/video_output
+    - NAME=access_copy
+    - DURATION=1000
+    - PRESET=ultrafast
+    - CRF=19
+    - VIDEO_CODEC=libx264
+    - AUDIO_CODEC=aac
+    - AUDIO_BITRATE=256k
+    - PIX_FMT=yuv420p
+  volumes:
+    - /Volumes/ProToolsWorkspace_2012/Glen Fiddle Week 2016/1 August/Meehans house/:/video_input/
+    - /Volumes/ProToolsWorkspace_2012/processed_video/:/video_output/
