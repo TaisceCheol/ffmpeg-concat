@@ -1,5 +1,5 @@
 video:
-  image: testvideo
+  image: itmadublin/ffmpeg-concat
   environment:
     - READ_DIR=/video_input
     - WRITE_DIR=/video_output
