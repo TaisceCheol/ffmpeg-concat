@@ -4,7 +4,7 @@ video:
     - READ_DIR=/video_input
     - WRITE_DIR=/video_output
     - NAME=access_copy
-    - DURATION=1000
+    - DURATION=10
     - PRESET=ultrafast
     - CRF=19
     - VIDEO_CODEC=libx264
