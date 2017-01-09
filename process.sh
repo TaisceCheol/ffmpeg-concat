@@ -18,7 +18,9 @@ LOGLEVEL=info
 IFS=$'\n'
 
 # glob MXF files in subdirectories, expects video folder mounted at /video
-MXF_FILES=$(find $READ_DIR -type f -name '*.MXF')
+MXF_FILES=$(find $READ_DIR -type f -name '[!.]*.MXF')
+
+for f in $MXF_FILES; do echo $f;done
 
 # make directory to store concat textfile
 FILELIST_PATH=/var/tmp/ffmpeg_concat
