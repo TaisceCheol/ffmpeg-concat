@@ -1,10 +1,11 @@
 video:
-  image: itmadublin/ffmpeg-concat
+  # image: itmadublin/ffmpeg-concat
+  build: '.'
   environment:
     - READ_DIR=/video_input
     - WRITE_DIR=/video_output
     - NAME=access_copy
     - DURATION=10
   volumes:
-    - /Volumes/ProToolsWorkspace_2012/Glen Fiddle Week 2016/1 August/Meehans house/:/video_input/
-    - /Volumes/ProToolsWorkspace_2012/processed_video/:/video_output/
+    - /Volumes/ITMAVIDEO/VIDEO/FR_Bag_Store/080716_wcss_lunchtime_pipes/data/080716_wcss_lunchtime_piping_recital/Video/:/video_input/
+    - /Users/itma/code/itma.ffmpeg-concat/:/video_output/
