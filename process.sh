@@ -14,10 +14,10 @@
 function ffmpeg_cmd() {
 	# parameters:  1 - pass number | 2 - output file
 	ffmpeg -y -f concat -safe 0 -i $FILELIST_PATH -t $DURATION \
-				-c:v $VIDEO_CODEC -preset $PRESET -b:v ${VIDEO_BITRATE}k -pix_fmt $PIX_FMT -vf yadif  \
-				-c:a $AUDIO_CODEC -b:a ${AUDIO_BITRATE}k -ac 2  \
-				-map 0 -movflags +faststart -pass $1 \
-				-loglevel $LOGLEVEL -f mp4 $2
+		-c:v $VIDEO_CODEC -preset $PRESET -b:v ${VIDEO_BITRATE}k -pix_fmt $PIX_FMT -vf yadif  \
+		-c:a $AUDIO_CODEC -b:a ${AUDIO_BITRATE}k -ac 2  \
+		-map 0 -movflags +faststart -pass $1 \
+		-loglevel $LOGLEVEL -f mp4 $2
 }
 
 # set ffmpeg log-level
