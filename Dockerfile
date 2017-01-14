@@ -13,7 +13,6 @@ ENV READ_DIR=/video \
 	NAME=access_copy \
 	DURATION=-1 	\
 	PRESET=fast 	\
-	# CRF=18		\
 	VIDEO_CODEC=libx264\
 	AUDIO_CODEC=libfdk_aac \
 	AUDIO_BITRATE=320 \
