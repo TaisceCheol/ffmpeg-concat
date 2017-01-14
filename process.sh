@@ -1,4 +1,24 @@
-# concat video and generate MP4 surrogate
+###### 
+# concat video and generate MP4 surrogate, expects following VARS:
+# 	READ_DIR=/video \
+# 	WRITE_DIR=/video \
+# 	NAME=access_copy \
+# 	DURATION=-1 	\
+# 	PRESET=fast 	\
+# 	VIDEO_CODEC=libx264\
+# 	AUDIO_CODEC=libfdk_aac \
+# 	AUDIO_BITRATE=320 \
+# 	PIX_FMT=yuv420p
+###### 
+
+function ffmpeg_cmd() {
+	# parameters:  1 - pass number | 2 - output file
+	ffmpeg -y -f concat -safe 0 -i $FILELIST_PATH -t $DURATION \
+				-c:v $VIDEO_CODEC -preset $PRESET -b:v ${VIDEO_BITRATE}k -pix_fmt $PIX_FMT -vf yadif  \
+				-c:a $AUDIO_CODEC -b:a ${AUDIO_BITRATE}k -ac 2  \
+				-map 0 -movflags +faststart -pass $1 \
+				-loglevel $LOGLEVEL -f mp4 $2
+}
 
 # set ffmpeg log-level
 LOGLEVEL=error
@@ -15,52 +35,30 @@ TOTAL_MXF_DURATION=0.0;
 
 for f in $MXF_FILES; 
 	do
-		fdur=$(ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 $f);
-		TOTAL_MXF_DURATION=$(echo $TOTAL_MXF_DURATION + $fdur | bc);
+		inc_dur=$(ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 $f);
+		TOTAL_MXF_DURATION=$(echo $TOTAL_MXF_DURATION + $inc_dur | bc);
 	done
 
 VIDEO_BITRATE=$( echo $IDEAL_FILE_SIZE / $TOTAL_MXF_DURATION | bc)
 VIDEO_BITRATE=$( echo $VIDEO_BITRATE - $AUDIO_BITRATE | bc)
 
 # make directory to store concat textfile
-FILELIST_PATH=/var/tmp/ffmpeg_concat
-mkdir -p $FILELIST_PATH
+FILELIST_DIR=/var/tmp/ffmpeg_concat
+mkdir -p $FILELIST_DIR
+FILELIST_PATH=$FILELIST_DIR/$NAME\_filelist.txt
 
 # sort files by name and generate filelist 
-printf "file '%s'\n" $(ls $MXF_FILES) > $FILELIST_PATH/filelist.txt
+printf "file '%s'\n" $(ls $MXF_FILES) > $FILELIST_PATH
 
 echo 'WARNING: CRF value will be ignored as video bitrate is calculated to achieve target filesize < 5GB'
 
-# run ffmpeg, checking if duration is set
+# check if duration is set, if not use calculated total duration
 if [ $DURATION -eq -1 ]
 then
-	# FULL DURATION, IGNORE DURATION ENV VAR
-		# first pass
-	time ffmpeg -y -f concat -safe 0 -i $FILELIST_PATH/filelist.txt  \
-				-c:v $VIDEO_CODEC -preset $PRESET -b:v ${VIDEO_BITRATE}k -pix_fmt $PIX_FMT -vf yadif  \
-				-c:a $AUDIO_CODEC -b:a ${AUDIO_BITRATE}k -ac 2  \
-				-map 0 -pass 1 \
-				-loglevel $LOGLEVEL -f mp4 /dev/null && \
-		# second pass
-		 ffmpeg -y -f concat -safe 0 -i $FILELIST_PATH/filelist.txt  \
-				-c:v $VIDEO_CODEC -preset $PRESET -b:v ${VIDEO_BITRATE}k -pix_fmt $PIX_FMT -vf yadif \
-				-c:a $AUDIO_CODEC -b:a ${AUDIO_BITRATE}k -ac 2  \
-				-map 0 -movflags +faststart -pass 2 \
-				-loglevel $LOGLEVEL $WRITE_DIR/$NAME.mp4
-else
-	# USE DURATION ENV VAR
-		# first pass
-	time ffmpeg -y -f concat -safe 0 -i $FILELIST_PATH/filelist.txt  -t $DURATION \
-				-c:v $VIDEO_CODEC -preset $PRESET -b:v ${VIDEO_BITRATE}k -pix_fmt $PIX_FMT -vf yadif  \
-				-c:a $AUDIO_CODEC -b:a ${AUDIO_BITRATE}k -ac 2  \
-				-map 0 -pass 1 \
-				-loglevel $LOGLEVEL -f mp4 /dev/null && \
-		# second pass
-		  ffmpeg -y -f concat -safe 0 -i $FILELIST_PATH/filelist.txt  -t $DURATION \
-				-c:v $VIDEO_CODEC -preset $PRESET -b:v ${VIDEO_BITRATE}k  -pix_fmt $PIX_FMT -vf yadif \
-				-c:a $AUDIO_CODEC -b:a ${AUDIO_BITRATE}k -ac 2  \
-				-map 0 -movflags +faststart -pass 2 \
-				-loglevel $LOGLEVEL $WRITE_DIR/$NAME.mp4					
+	DURATION=$TOTAL_MXF_DURATION				
 fi
 
-rm $FILELIST_PATH/filelist.txt
+#ffmpeg two-pass 
+time 	ffmpeg2pass 1 /dev/null && \
+		ffmpeg2pass 2 $WRITE_DIR/$NAME.mp4
+
