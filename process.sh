@@ -29,7 +29,7 @@ IFS=$'\n'
 # glob MXF files in subdirectories, expects video folder mounted at /video
 MXF_FILES=$(find $READ_DIR -type f -name '[!.]*.MXF')
 
-# we want to produce surrogates < 5GB in size
+# we want to produce surrogates ~= 5GB in size | https://en.wikipedia.org/wiki/Gigabyte#Consumer_confusion | use du -h or ls -lah
 IDEAL_FILE_SIZE=$(echo '4900 * 8192' | bc)
 TOTAL_MXF_DURATION=0.0;
 
