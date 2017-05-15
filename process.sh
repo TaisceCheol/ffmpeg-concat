@@ -59,6 +59,6 @@ then
 fi
 
 #ffmpeg two-pass 
-time 	ffmpeg2pass 1 /dev/null && \
-		ffmpeg2pass 2 $WRITE_DIR/$NAME.mp4
+time 	ffmpeg_cmd 1 /dev/null && \
+		ffmpeg_cmd 2 $WRITE_DIR/$NAME.mp4
 
